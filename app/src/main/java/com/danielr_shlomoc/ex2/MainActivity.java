@@ -7,8 +7,10 @@ import android.os.Bundle;
 import android.view.WindowManager;
 
 import java.util.Objects;
+import android.view.View;
+import android.widget.Button;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,5 +23,14 @@ public class MainActivity extends AppCompatActivity {
         //remove notification bar
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN ,WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+
+        Button btn1 = findViewById(R.id.button);
+
+        btn1.setOnClickListener(this);
+
     }
+
+    @Override
+    public void onClick(View v) {
+         }
 }
