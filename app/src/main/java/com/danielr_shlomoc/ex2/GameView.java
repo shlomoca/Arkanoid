@@ -12,10 +12,13 @@ public class GameView extends View {
 
     private static final int GET_READY_STATE = 1,PLAYING_STATE = 2, GAME_OVER_STATE = 3;
     private static final int NUM_OF_LIVES = 3, BALL_SIZE = 20, PADDLE_RADIUS = 10;
-    private int bg_color, current_state;
+    private final int ROWS, COLS;
+    private int bg_color, current_state, score;
     private Ball b;
     private Thread ball_thread;
     private boolean alive;
+    private Paint textPaint;
+    private BrickCollection bricks;
     private Lives L;
 
     public GameView(Context context, AttributeSet attrs) {
@@ -23,7 +26,21 @@ public class GameView extends View {
         bg_color = Color.YELLOW;
 
 
+        score = 0;
 
+        // random number in range 2-6
+        ROWS = (int) (Math.random() * 5) + 2;
+
+        // random number in range 3-7
+        COLS = (int) (Math.random() * 5) + 3;
+
+
+        // text pen
+        textPaint = new Paint();
+        textPaint.setColor(Color.BLACK);
+        textPaint.setTextSize(50);
+        textPaint.setTextAlign(Paint.Align.CENTER);
+        textPaint.setFakeBoldText(true);
 
     }
 
@@ -42,6 +59,8 @@ public class GameView extends View {
                 break;
             case GAME_OVER_STATE:
 
+
+        bricks.drawBricks(canvas);
                 break;
         }
         b.draw(canvas);
@@ -52,6 +71,8 @@ public class GameView extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
+        bricks = new BrickCollection(ROWS, COLS, h, w);
+    }
         bg_color=Color.BLACK;
         init_game();
 
