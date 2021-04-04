@@ -12,7 +12,7 @@ import android.view.View;
 public class GameView extends View {
 
     private static final int GET_READY_STATE = 1, PLAYING_STATE = 2, GAME_OVER_STATE = 3;
-    private static final int NUM_OF_LIVES = 3, BALL_SIZE = 20, PADDLE_HEIGHT=150;
+    private static final int NUM_OF_LIVES = 3, BALL_SIZE = 20, PADDLE_HEIGHT = 150;
     private final int ROWS, COLS;
     private final int bg_color, paddle_color;
 
@@ -56,19 +56,21 @@ public class GameView extends View {
         bricks.drawBricks(canvas);
 
 
-        switch (current_state) {
-            default:
-            case GET_READY_STATE:
-                break;
-            case PLAYING_STATE:
-                if (ball.move(getWidth(), getHeight()))
-                    if (LIVES.died())
-                        current_state = GAME_OVER_STATE;
-                invalidate();
-                break;
-            case GAME_OVER_STATE:
-                break;
-        }
+//        switch (current_state) {
+//            default:
+//            case GET_READY_STATE:
+//                break;
+//            case PLAYING_STATE:
+//                if (ball.move(getWidth(), getHeight()))
+//                    if (LIVES.died())
+//                        current_state = GAME_OVER_STATE;
+//                    else
+//                        init_game(false);
+//                invalidate();
+//                break;
+//            case GAME_OVER_STATE:
+//                break;
+//        }
         ball.draw(canvas);
         bricks.drawBricks(canvas);
         paddle.draw(canvas);
@@ -81,8 +83,7 @@ public class GameView extends View {
         super.onSizeChanged(w, h, oldw, oldh);
         this.w = w;
         this.h = h;
-
-        init_game();
+        init_game(true);
 
 
     }
@@ -97,7 +98,7 @@ public class GameView extends View {
             case MotionEvent.ACTION_MOVE:
                 switch (current_state) {
                     case GAME_OVER_STATE:
-                        init_game();
+                        init_game(true);
                     case GET_READY_STATE:
                     default:
                         current_state = PLAYING_STATE;
@@ -113,7 +114,6 @@ public class GameView extends View {
                 break;
 
 
-
             case MotionEvent.ACTION_UP:
 
                 break;
@@ -122,11 +122,14 @@ public class GameView extends View {
         return true;
     }
 
-    private void init_game() {
-        bricks = new BrickCollection(ROWS, COLS, h, w);
+    private void init_game(boolean reset) {
+        if (reset) {
+            bricks = new BrickCollection(ROWS, COLS, h, w);
+            LIVES = new Lives(NUM_OF_LIVES, textPaint);
+        }
+        play_ball();
         ball = new Ball((float) getWidth() / 2, (float) getHeight() - PADDLE_HEIGHT, BALL_SIZE, Color.BLUE);
-        LIVES = new Lives(NUM_OF_LIVES, textPaint);
-        paddle = new Paddle((float) getWidth() / 2, (float) getHeight() - PADDLE_HEIGHT,bricks.getW()/2,paddle_color);
+        paddle = new Paddle((float) getWidth() / 2, (float) getHeight() - PADDLE_HEIGHT, bricks.getW() / 2, paddle_color);
         current_state = GET_READY_STATE;
     }
 
@@ -137,12 +140,27 @@ public class GameView extends View {
             alive = true;
             ball_thread = new Thread(new Runnable() {
                 public void run() {
-                    while (alive) {
+                    while (current_state != GAME_OVER_STATE) {
                         try {
-                            Thread.sleep(1000);
-                            if (ball.move(0, 0))
-                                if (LIVES.died())
-                                    current_state = GAME_OVER_STATE;
+                            Thread.sleep(10);
+                            switch (current_state) {
+                                default:
+                                case GET_READY_STATE:
+                                    break;
+                                case PLAYING_STATE:
+                                    if (ball.move(getWidth(), getHeight()))
+                                        if (LIVES.died())
+                                            current_state = GAME_OVER_STATE;
+                                        else
+                                            init_game(false);
+
+                                    break;
+                                case GAME_OVER_STATE:
+                                    break;
+                            }
+//                            if (ball.move(0, 0))
+//                                if (LIVES.died())
+//                                    current_state = GAME_OVER_STATE;
                             postInvalidate();
                         } catch (InterruptedException e) {
                             e.printStackTrace();
@@ -152,6 +170,7 @@ public class GameView extends View {
                 }
             });
             ball_thread.start();
+            invalidate();
         }
     }
 

@@ -26,12 +26,12 @@ public class Ball {
     }
 
     public boolean move(int w, int h) {
-        //moves the ball in the dx dy direction. If the
+        //moves the ball in the dx dy direction. If the ball hit the ground then return true
         x = x + dx;
         y = y + dy;
 
         // check border left or right
-        if (x - radius < 0 || x + radius > w)
+        if (x - radius < 0 || x + radius > w )
             dx = -dx;
 
         // bottom or top
@@ -67,26 +67,10 @@ public class Ball {
         canvas.drawCircle(x, y, radius, ballPaint);
     }
 
-    public boolean collideWith(Ball other) {
-        double dist = Math.sqrt((this.x - other.x) * (this.x - other.x) + (this.y - other.y) * (this.y - other.y));
+    public boolean collideWith(Paddle paddle, BrickCollection collection){
 
-        if (dist < (this.radius + other.radius))
-            return true;
         return false;
     }
-
-    public boolean isInside(float tx, float ty) {
-        double dist = Math.sqrt((this.x - tx) * (this.x - tx) + (this.y - ty) * (this.y - ty));
-
-        if (dist < (this.radius))
-            return true;
-        return false;
-    }
-
-    public void changeRndColor() {
-        ballPaint.setColor(new Random().nextInt());
-    }
-
 
 }
 
