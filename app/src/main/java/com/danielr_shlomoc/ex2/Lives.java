@@ -7,11 +7,11 @@ import android.text.TextPaint;
 
 public class Lives {
     private final Paint ALIVE, DEAD;
-    private final TextPaint TEXT_PAINT;
+    private final Paint TEXT_PAINT;
     private final int NUM_OF_LIVES, LIVES_HEIGHT, LIVES_MARGIN, LIVES_RADIUS;
     private int game_lives;
 
-    public Lives(int num_of_lives) {
+    public Lives(int num_of_lives, Paint p) {
         NUM_OF_LIVES = num_of_lives;
         game_lives = num_of_lives;
         LIVES_HEIGHT = 30;
@@ -20,7 +20,7 @@ public class Lives {
 
         ALIVE = new Paint();
         DEAD = new Paint();
-        TEXT_PAINT = new TextPaint();
+        TEXT_PAINT = p;
         set_painters();
 
     }
@@ -35,8 +35,7 @@ public class Lives {
         DEAD.setStrokeWidth(10);
         DEAD.setStyle(Paint.Style.STROKE);
 
-        TEXT_PAINT.setTextSize(60);
-        TEXT_PAINT.setColor(Color.WHITE);
+
     }
 
     public void draw(Canvas canvas) {

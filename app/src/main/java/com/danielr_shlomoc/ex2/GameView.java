@@ -11,21 +11,24 @@ import android.view.View;
 
 public class GameView extends View {
 
-    private static final int GET_READY_STATE = 1,PLAYING_STATE = 2, GAME_OVER_STATE = 3;
-    private static final int NUM_OF_LIVES = 3, BALL_SIZE = 20, PADDLE_RADIUS = 10;
+    private static final int GET_READY_STATE = 1, PLAYING_STATE = 2, GAME_OVER_STATE = 3;
+    private static final int NUM_OF_LIVES = 3, BALL_SIZE = 20, PADDLE_HEIGHT=150;
     private final int ROWS, COLS;
-    private int bg_color, current_state, score;
-    private Ball b;
+    private final int bg_color, paddle_color;
+
+    private int current_state, score, w, h;
     private Thread ball_thread;
     private boolean alive;
     private Paint textPaint;
     private BrickCollection bricks;
-    private Lives L;
+    private Ball ball;
+    private Lives LIVES;
+    private Paddle paddle;
 
     public GameView(Context context, AttributeSet attrs) {
         super(context, attrs);
         bg_color = Color.BLACK;
-
+        paddle_color = Color.GREEN;
 
         score = 0;
 
@@ -38,7 +41,7 @@ public class GameView extends View {
 
         // text pen
         textPaint = new Paint();
-        textPaint.setColor(Color.BLACK);
+        textPaint.setColor(Color.WHITE);
         textPaint.setTextSize(50);
         textPaint.setTextAlign(Paint.Align.CENTER);
         textPaint.setFakeBoldText(true);
@@ -49,22 +52,26 @@ public class GameView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         canvas.drawColor(bg_color);
-        L.draw(canvas);
+        LIVES.draw(canvas);
         bricks.drawBricks(canvas);
 
 
-        switch (current_state){
+        switch (current_state) {
             default:
             case GET_READY_STATE:
                 break;
             case PLAYING_STATE:
-                b.move(getWidth(), getHeight());
+                if (ball.move(getWidth(), getHeight()))
+                    if (LIVES.died())
+                        current_state = GAME_OVER_STATE;
                 invalidate();
                 break;
             case GAME_OVER_STATE:
                 break;
         }
-        b.draw(canvas);
+        ball.draw(canvas);
+        bricks.drawBricks(canvas);
+        paddle.draw(canvas);
 
 
     }
@@ -72,58 +79,54 @@ public class GameView extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        bricks = new BrickCollection(ROWS, COLS, h, w);
+        this.w = w;
+        this.h = h;
+
         init_game();
 
 
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event)
-    {
+    public boolean onTouchEvent(MotionEvent event) {
         float tx = event.getX();
         float ty = event.getY();
 
-        switch (event.getAction())
-        {
+        switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-            L.died();
-            invalidate();
-                if(current_state == GET_READY_STATE || current_state == GAME_OVER_STATE)
-                {
-                    current_state = PLAYING_STATE;
-                    invalidate();
-                }
-//                else
-//                {
-//                    // check if red ball catch for dragging
-//                    if(!isDraging && redBall.isInside(tx,ty))
-//                        isDraging = true;
-//                }
-                break;
-
             case MotionEvent.ACTION_MOVE:
-                //Log.d("mylog", "MotionEvent.ACTION_MOVE ");
+                switch (current_state) {
+                    case GAME_OVER_STATE:
+                        init_game();
+                    case GET_READY_STATE:
+                    default:
+                        current_state = PLAYING_STATE;
+                        invalidate();
+                        break;
+                    case PLAYING_STATE:
+                        if (tx < w / 2)
+                            paddle.move_left();
+                        else
+                            paddle.move_right(w);
 
-//                if(isDraging)
-//                {
-//                    redBall.setX(tx);
-//                    redBall.setY(ty);
-//                }
+                }
                 break;
+
+
 
             case MotionEvent.ACTION_UP:
-                ///Log.d("mylog", "MotionEvent.ACTION_UP ");
-//                isDraging = false;
+
                 break;
 
         }
         return true;
     }
 
-    private void init_game(){
-        b = new Ball( (float) getWidth()/2,getHeight() - (PADDLE_RADIUS*2+10) ,BALL_SIZE,Color.BLUE);
-        L = new Lives(NUM_OF_LIVES);
+    private void init_game() {
+        bricks = new BrickCollection(ROWS, COLS, h, w);
+        ball = new Ball((float) getWidth() / 2, (float) getHeight() - PADDLE_HEIGHT, BALL_SIZE, Color.BLUE);
+        LIVES = new Lives(NUM_OF_LIVES, textPaint);
+        paddle = new Paddle((float) getWidth() / 2, (float) getHeight() - PADDLE_HEIGHT,bricks.getW()/2,paddle_color);
         current_state = GET_READY_STATE;
     }
 
@@ -137,8 +140,10 @@ public class GameView extends View {
                     while (alive) {
                         try {
                             Thread.sleep(1000);
-                            b.move(0, 0);
-                            invalidate();
+                            if (ball.move(0, 0))
+                                if (LIVES.died())
+                                    current_state = GAME_OVER_STATE;
+                            postInvalidate();
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }

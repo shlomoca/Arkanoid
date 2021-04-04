@@ -33,18 +33,7 @@ public class Brick {
         if (ballX - radius > right)
             arr[1] += 1;
 
-
-
-        if (ballY >= top && ballY <= bottom) {
-
-            // left hit
-            if (ballX + radius >= left && ballX + radius <= right)
-                return new int[]{0, 0};
-
-            // right hit
-            if (ballX + radius >= left && ballX + radius <= right)
-                return new int[]{0, 0};
-        }
+        return arr;
 
 
     }
