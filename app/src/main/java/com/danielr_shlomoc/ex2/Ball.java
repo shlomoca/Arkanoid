@@ -40,6 +40,10 @@ public class Ball
             dy = -dy;
     }
 
+    public float getRadius() {
+        return radius;
+    }
+
     public float getX()
     {
         return x;

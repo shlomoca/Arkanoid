@@ -24,7 +24,7 @@ public class GameView extends View {
 
     public GameView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        bg_color = Color.YELLOW;
+        bg_color = Color.BLACK;
 
 
         score = 0;
@@ -50,6 +50,9 @@ public class GameView extends View {
         super.onDraw(canvas);
         canvas.drawColor(bg_color);
         L.draw(canvas);
+        bricks.drawBricks(canvas);
+
+
         switch (current_state){
             default:
             case GET_READY_STATE:
@@ -59,9 +62,6 @@ public class GameView extends View {
                 invalidate();
                 break;
             case GAME_OVER_STATE:
-
-
-        bricks.drawBricks(canvas);
                 break;
         }
         b.draw(canvas);
