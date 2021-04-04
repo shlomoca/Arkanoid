@@ -3,6 +3,7 @@ package com.danielr_shlomoc.ex2;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -72,8 +73,6 @@ public class GameView extends View {
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         bricks = new BrickCollection(ROWS, COLS, h, w);
-    }
-        bg_color=Color.BLACK;
         init_game();
 
 
