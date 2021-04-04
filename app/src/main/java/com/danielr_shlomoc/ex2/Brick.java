@@ -33,6 +33,8 @@ public class Brick {
         if (ballX - radius > right)
             arr[1] += 1;
 
+
+
         return arr;
 
 

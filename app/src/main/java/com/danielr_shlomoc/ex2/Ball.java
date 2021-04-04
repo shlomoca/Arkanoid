@@ -25,7 +25,10 @@ public class Ball {
         ballPaint.setStyle(Paint.Style.FILL);
     }
 
-    public boolean move(int w, int h) {
+    public boolean move(int w, int h, boolean collied, int moves) {
+        if(collied && moves != 0)
+            dy = -dy;
+
         //moves the ball in the dx dy direction. If the ball hit the ground then return true
         x = x + dx;
         y = y + dy;
