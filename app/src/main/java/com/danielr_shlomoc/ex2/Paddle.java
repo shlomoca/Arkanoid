@@ -2,19 +2,24 @@ package com.danielr_shlomoc.ex2;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.util.Log;
 
 public class Paddle {
-    private final float RADIUS, MOVEMENT;
+    private final float MOVEMENT, TOP, BOTTOM;
     private final Paint PADDLE_PAINT;
     private float x, y, w, h;
+    private float  right, left;
 
-    public Paddle(float x, float y, float width, float height, float radius, int color) {
+    public Paddle(float x, float y, float width, float height, int color) {
         MOVEMENT = 100;
-        this.RADIUS = radius;
         this.x = x;
         this.y = y;
         w = width;
         h = height;
+        TOP = y-height/2;
+        BOTTOM = y+height/2;
+        right = x+width/2;
+        left = x-width/2;
 
 
         PADDLE_PAINT = new Paint();
@@ -22,41 +27,32 @@ public class Paddle {
         PADDLE_PAINT.setStyle(Paint.Style.FILL);
     }
 
-    public float getRADIUS() {
-        return RADIUS;
-    }
 
     public void move_right(float w) {
-        float target = x + MOVEMENT;
-        if (target + RADIUS > w)
-            x = w - RADIUS;
-        else
-            x = target;
+        float step = w-right;
+        if(step > MOVEMENT)
+            step = MOVEMENT;
+        left += step;
+        right += step;
+
     }
 
     public void move_left() {
-        float target = x - MOVEMENT;
-        if (target - RADIUS < 0)
-            x = RADIUS;
-        else
-            x = target;
+        float step =left ;
+        if(step > MOVEMENT)
+            step = MOVEMENT;
+        left -= step;
+        right -= step;
     }
 
     public void draw(Canvas canvas) {
-//        canvas.drawLine(x - RADIUS, y, x + RADIUS, y, PADDLE_PAINT);
-        canvas.drawRect(x - this.RADIUS, y, x - this.RADIUS + w, y + h / 2, PADDLE_PAINT);
+        canvas.drawRect(left, TOP, right, BOTTOM, PADDLE_PAINT);
     }
 
-    // This function gets position of the ball and check if there is collision between the ball and the paddle.
-    public boolean collied(Ball ball) {
 
-        float xBallCord = ball.getX();
-        float yBallCord = ball.getY();
-        float ballRadius = ball.getRadius();
-
-        if ((xBallCord >= x - this.RADIUS && xBallCord <= x - this.RADIUS + w) && (yBallCord+ballRadius == y) || (xBallCord + ballRadius == x - this.RADIUS && yBallCord >= y))
-            return true;
-        return false;
+    public void collides(Ball ball) {
+        //test to see if the ball collided with the paddle
+       ball.test_hit_rectangle(right, left, TOP, BOTTOM, true);
     }
 
 }

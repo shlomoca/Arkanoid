@@ -2,6 +2,7 @@ package com.danielr_shlomoc.ex2;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.util.Log;
 
 import java.util.Random;
 
@@ -53,6 +54,19 @@ public class Ball {
 
     public float getRadius() {
         return radius;
+    }
+    public boolean test_hit_rectangle(float right, float left, float top, float bottom, boolean moveBall) {
+        boolean pastRight = x+radius>=left
+                ,pastLeft = x-radius<=right
+                ,pastTop = y+radius>=top
+                ,pastBottom = y-radius<=bottom;
+        if(pastRight && pastLeft && pastTop && pastBottom){
+            if(moveBall){
+                hit_rectangle(right, left, top, bottom);
+            }
+            return true;
+        }
+       return false;
     }
 
     public void hit_rectangle(float right, float left, float top, float bottom){

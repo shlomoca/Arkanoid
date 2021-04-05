@@ -146,8 +146,7 @@ public class GameView extends View {
         }
         play_ball();
         ball = new Ball((float) getWidth() / 2, (float) getHeight() - PADDLE_HEIGHT - BALL_SIZE, BALL_SIZE, Color.BLUE);
-        paddle = new Paddle((float) getWidth() / 2, (float) getHeight() - PADDLE_HEIGHT, bricks.getW(), bricks.getH(), bricks.getW() / 2, paddle_color);
-//        paddle = new Paddle((float) getWidth() / 2, (float) getHeight() - PADDLE_HEIGHT, bricks.getW() / 2, paddle_color);
+        paddle = new Paddle((float) getWidth() / 2, (float) getHeight() - PADDLE_HEIGHT, bricks.getBrickWidth(), bricks.getBrickHeight()/2, paddle_color);
         current_state = GET_READY_STATE;
     }
 
@@ -166,18 +165,15 @@ public class GameView extends View {
                                 case GET_READY_STATE:
                                     break;
                                 case PLAYING_STATE:
-                                    if (paddle.collied(ball))
-                                        Log.d("myLog", "collied ");
-                                    if (ball.move(getWidth(), getHeight(), paddle.collied(ball), moves++))
+                                    if (ball.move(getWidth(), getHeight())) {
                                         if (LIVES.died()) {
                                             current_state = GAME_OVER_STATE;
-
-                                        } else {
-                                            moves = 0;
-                                            init_game(false);
                                         }
-
-
+                                    }
+                                    else{
+                                        paddle.collides(ball);
+                                        bricks.collides(ball);
+                                    }
                                     break;
                                 case GAME_OVER_STATE:
                                     break;
