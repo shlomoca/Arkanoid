@@ -25,22 +25,11 @@ public class Ball {
         ballPaint.setStyle(Paint.Style.FILL);
     }
 
-    public boolean move(int w, int h, boolean collied, int moves) {
-        if(collied && moves != 0)
-            dy = -dy;
-
+    public boolean move(int w, int h) {
         //moves the ball in the dx dy direction. If the ball hit the ground then return true
         x = x + dx;
         y = y + dy;
-
-        // check border left or right
-        if (x - radius < 0 || x + radius > w )
-            dx = -dx;
-
-        // bottom or top
-        if (y + radius > h || y - radius < 0){
-            dy = -dy;
-        }
+        hit_borders(w,h);
 
         return y + radius > h;
     }
@@ -64,6 +53,26 @@ public class Ball {
 
     public float getRadius() {
         return radius;
+    }
+
+    public void hit_rectangle(float right, float left, float top, float bottom){
+        /* test where the rectangle hit the ball and shift its direction*/
+        if(y >= bottom || y <= top)
+            dy = -dy;
+        if( x >= right || x <= left)
+            dx = -dx;
+    }
+    private void hit_borders(float w, float h){
+        /* test if the ball hit borders and move accordingly */
+        // check border left or right
+        if (x - radius < 0 || x + radius > w )
+            dx = -dx;
+
+        // bottom or top
+        if (y + radius > h || y - radius < 0){
+            dy = -dy;
+        }
+
     }
 
     public void draw(Canvas canvas) {

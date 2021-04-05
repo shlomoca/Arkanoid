@@ -1,19 +1,52 @@
 package com.danielr_shlomoc.ex2;
 
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+
 public class Brick {
 
-    private float left, top, right, bottom;
+    private final float LEFT, TOP, RIGHT, BOTTOM;
+    private Paint brickPaint;
+    private boolean active;
 
 
     public Brick(float left, float top, float right, float bottom) {
 
-        this.left = left;
-        this.top = top;
-        this.right = right;
-        this.bottom = bottom;
+        this.LEFT = left;
+        this.TOP = top;
+        this.RIGHT = right;
+        this.BOTTOM = bottom;
+
+        active = true;
+
+        // brick pen
+        brickPaint = new Paint();
+        brickPaint.setColor(Color.WHITE);
+        brickPaint.setStyle(Paint.Style.FILL);
+        brickPaint.setStrokeWidth(5);
     }
 
-    public int[] collides(Ball ball) {
+    public float getBOTTOM() {
+        return BOTTOM;
+    }
+
+    public float getLEFT() {
+        return LEFT;
+    }
+
+    public float getRIGHT() {
+        return RIGHT;
+    }
+
+    public float getTOP() {
+        return TOP;
+    }
+
+    public int[] collided(Ball ball) {
+        /* tests if the ball collided with the brick.
+            returns a int array with 2 slots that reference the location on the scale.
+             [x between 1-(-1), y between 1-(-1)] */
 
         float ballX = ball.getX();
         float ballY = ball.getY();
@@ -21,54 +54,36 @@ public class Brick {
 
         int arr[] = {0, 0};
 
-        if (ballY + radius < top)
-            arr[0] -= 1;
-
-        if (ballY - radius > bottom)
-            arr[0] += 1;
-
-        if (ballX + radius < left)
+        if (ballY + radius < TOP)
             arr[1] -= 1;
 
-        if (ballX - radius > right)
+        if (ballY - radius > BOTTOM)
             arr[1] += 1;
 
+        if (ballX + radius < LEFT)
+            arr[0] -= 1;
 
+        if (ballX - radius > RIGHT)
+            arr[0] += 1;
 
         return arr;
 
-
     }
 
-    public float getLeft() {
-        return left;
+    public boolean getActive() {
+        return active;
     }
 
-    public void setLeft(int left) {
-        this.left = left;
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
-    public float getTop() {
-        return top;
+    public void setBrickPaint(Paint brickPaint) {
+        this.brickPaint = brickPaint;
     }
 
-    public void setTop(int top) {
-        this.top = top;
+    public void drew(Canvas canvas) {
+        canvas.drawRect(LEFT, TOP, RIGHT, BOTTOM, brickPaint);
     }
 
-    public float getRight() {
-        return right;
-    }
-
-    public void setRight(int right) {
-        this.right = right;
-    }
-
-    public float getBottom() {
-        return bottom;
-    }
-
-    public void setBottom(int bottom) {
-        this.bottom = bottom;
-    }
 }

@@ -1,82 +1,80 @@
 package com.danielr_shlomoc.ex2;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.Log;
 
 public class BrickCollection {
 
-    private Brick[][] bricks;
-    private int rows, cols;
-    private float w,h;
+    private final Brick[][] bricks;
+    private final float rows, cols,minimum,maximum;
+    private final float w, h;
     private Paint brickPaint;
 
     public BrickCollection(int rows, int cols, int height, int width) {
 
+        minimum = 250;
         bricks = new Brick[rows][cols];
         this.rows = rows;
         this.cols = cols;
-        this.w =  width / cols;
-        this.h =  height / 20;
-        float left = 0, top = 250;
+        this.w = (float) (width / cols);
+        this.h = (float) (height / 20);
+        float left = 0, top = minimum;
 
-        Log.d("myLog","rows: "+rows+" cols: "+cols);
         // initialize the board bricks
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                bricks[i][j] = new Brick(left, top, (float) (left + this.w), (float) (top + this.h));
-                left = (float) (left + this.w + 5);
-
+                bricks[i][j] = new Brick(left, top,  left + this.w, top + this.h);
+                left += this.w + 5;
             }
             left = 0;
-            top = (float) (top + this.h + 5);
+            top += this.h + 5;
         }
-
-        // brick pen
-        brickPaint = new Paint();
-        brickPaint.setColor(Color.WHITE);
-        brickPaint.setStyle(Paint.Style.FILL);
-        brickPaint.setStrokeWidth(5);
-
+        maximum = top;
     }
 
+    public int[] collides(Ball ball) {
+        int top = (int) rows, bottom = 0, left = (int) cols ,right = 0 ;
+        float ballX= ball.getX(), ballY = ball.getY(), ballRadius = ball.getRadius();
+        int i = top/2,j = left/2;
+
+        while(true){
+            Brick brick = bricks[i][j];
+            boolean active = brick.getActive();
+
+            int [] location = brick.collided(ball);
+            if(location[0]==0 && location[1]==0){
+                if(active){
+                    brick.setActive(false);
+                    ball.hit_rectangle(brick.getRIGHT(),brick.getLEFT(),brick.getTOP(),brick.getBOTTOM());
+                }
+                else //hit non active brick
+                    return null;
+            }
+            if( location[0]==1){//
+
+            }
+            break;
+        }
+        return null;
+
+    }
     // This function draw the bricks on the given canvas.
     public void drawBricks(Canvas canvas) {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                float left = this.bricks[i][j].getLeft();
-                float top = this.bricks[i][j].getTop();
-                float right = this.bricks[i][j].getRight();
-                float bottom = this.bricks[i][j].getBottom();
-                canvas.drawRect(left, top, right, bottom, brickPaint);
+                Brick brick = this.bricks[i][j];
+                if (brick.getActive())
+                    brick.drew(canvas);
             }
-
         }
-    }
-
-    public Brick[][] getBricks() {
-        return bricks;
-    }
-
-    public void setBricks(Brick[][] bricks) {
-        this.bricks = bricks;
     }
 
     public float getW() {
         return w;
     }
 
-    public void setW(int w) {
-        this.w = w;
-    }
-
     public float getH() {
         return h;
-    }
-
-    public void setH(int h) {
-        this.h = h;
     }
 
     public Paint getBrickPaint() {
