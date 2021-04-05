@@ -35,12 +35,17 @@ public class BrickCollection {
     }
 
     public void collides(Ball ball) {
-        int i = (int) rows / 2, j = (int) cols / 2;
+//        int i = (int) rows / 2, j = (int) cols / 2;
+        int i = 0, j = 0;
         boolean inBlocksArea = ball.test_hit_rectangle(w, 0, minimum, maximum, false);
         while (inBlocksArea) {
-            Log.i("blablatrue", "in bricks area: " + inBlocksArea);
-            if (i >= rows || i < 0 || j >= cols || j < 0)
+            if (i >= rows || i < 0 || j >= cols || j < 0){
+
+            Log.i("shlomoLog", "test out of bound "+i +" j: " + j);
                 break;
+            }
+
+            Log.i("shlomoLog", "i: "+i +" j: " + j);
             Brick brick = bricks[i][j];
             boolean active = brick.getActive();
 

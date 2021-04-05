@@ -46,7 +46,7 @@ public class Brick {
     public int[] collided(Ball ball) {
         /* tests if the ball collided with the brick.
             returns a int array with 2 slots that reference the location on the scale.
-             [x between 1-(-1), y between 1-(-1)] */
+             [y between 1-(-1), x between 1-(-1)] */
 
         float ballX = ball.getX();
         float ballY = ball.getY();
@@ -55,16 +55,16 @@ public class Brick {
         int arr[] = {0, 0};
 
         if (ballY + radius < TOP)
-            arr[1] -= 1;
-
-        if (ballY - radius > BOTTOM)
-            arr[1] += 1;
-
-        if (ballX + radius < LEFT)
             arr[0] -= 1;
 
-        if (ballX - radius > RIGHT)
+        if (ballY - radius > BOTTOM)
             arr[0] += 1;
+
+        if (ballX + radius < LEFT)
+            arr[1] -= 1;
+
+        if (ballX - radius > RIGHT)
+            arr[1] += 1;
 
         return arr;
 
