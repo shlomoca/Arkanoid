@@ -8,17 +8,17 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import static java.lang.Thread.sleep;
+
 
 public class GameView extends View {
 
-    private static final int GET_READY_STATE = 1, PLAYING_STATE = 2, GAME_OVER_STATE = 3;
+    private static final int GET_READY_STATE = 1, PLAYING_STATE = 2, GAME_OVER_STATE = 3,WON_BOARD = 4;
     private static final int NUM_OF_LIVES = 3, PADDLE_HEIGHT = 150;
-    private static int moves = 0;
     private final int ROWS, COLS;
     private final int bg_color, paddle_color;
     private int current_state, score, w, h, ballRadius;
     private Thread ball_thread;
-    private boolean alive;
     private Paint textPaint, gameSituation;
     private BrickCollection bricks;
     private Ball ball;
@@ -59,36 +59,25 @@ public class GameView extends View {
         super.onDraw(canvas);
         canvas.drawColor(bg_color);
         canvas.drawText("Score: " + score, 30, 80, textPaint);
-        LIVES.draw(canvas);
-        bricks.drawBricks(canvas);
-
-
-//        switch (current_state) {
-//            default:
-//            case GET_READY_STATE:
-//                break;
-//            case PLAYING_STATE:
-//                if (ball.move(getWidth(), getHeight()))
-//                    if (LIVES.died())
-//                        current_state = GAME_OVER_STATE;
-//                    else
-//                        init_game(false);
-//                invalidate();
-//                break;
-//            case GAME_OVER_STATE:
-//                break;
-//        }
         ball.draw(canvas);
         bricks.drawBricks(canvas);
         paddle.draw(canvas);
+        LIVES.draw(canvas);
+        String text ="";
 
+        switch (current_state){
+            case GET_READY_STATE:
+                text = "Click to PLAY!";
+                break;
+        case GAME_OVER_STATE:
+                text = "GAME OVER - You Loss!";
+                break;
+        case WON_BOARD:
+                text = "GAME OVER - You Win!";
+                break;
+        }
 
-        if (current_state == GET_READY_STATE)
-            canvas.drawText("Click to PLAY!", getWidth() / 2, getHeight() / 2, gameSituation);
-
-
-        if (current_state == GAME_OVER_STATE)
-            canvas.drawText("GAME OVER - You Loss!", getWidth() / 2, getHeight() / 2, gameSituation);
+        canvas.drawText(text, (float)getWidth() / 2, (float)getHeight() / 2, gameSituation);
 
 
     }
@@ -106,7 +95,6 @@ public class GameView extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         float tx = event.getX();
-        float ty = event.getY();
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -120,7 +108,7 @@ public class GameView extends View {
                         invalidate();
                         break;
                     case PLAYING_STATE:
-                        if (tx < w / 2)
+                        if (tx < (float) w / 2)
                             paddle.move_left();
                         else
                             paddle.move_right(w);
@@ -141,7 +129,6 @@ public class GameView extends View {
         if (reset) {
             bricks = new BrickCollection(ROWS, COLS, h, w);
             LIVES = new Lives(NUM_OF_LIVES, textPaint);
-            moves = 0;
         }
         play_ball();
         ballRadius = (int) bricks.getBrickHeight() / 2;
@@ -154,15 +141,15 @@ public class GameView extends View {
         //sets a timer in the app to show the user the amount of time he is playing
         if (ball_thread == null) {
             //if timer is already set
-            alive = true;
             ball_thread = new Thread(new Runnable() {
                 public void run() {
                     while (current_state != GAME_OVER_STATE) {
                         try {
-                            Thread.sleep(10);
+                            sleep(10);
                             switch (current_state) {
                                 default:
                                 case GET_READY_STATE:
+                                case GAME_OVER_STATE:
                                     break;
                                 case PLAYING_STATE:
                                     // the case that the ball hit the ground.
@@ -177,14 +164,13 @@ public class GameView extends View {
                                     else {
                                         paddle.collides(ball);
                                         bricks.collides(ball);
+                                        if(bricks.getGameOver())
+                                            current_state= WON_BOARD;
                                     }
                                     break;
-                                case GAME_OVER_STATE:
-                                    break;
+
                             }
-//                            if (ball.move(0, 0))
-//                                if (LIVES.died())
-//                                    current_state = GAME_OVER_STATE;
+
                             postInvalidate();
                         } catch (InterruptedException e) {
                             e.printStackTrace();

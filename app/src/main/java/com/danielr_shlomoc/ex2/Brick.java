@@ -7,7 +7,7 @@ import android.graphics.Paint;
 public class Brick {
 
     private final float LEFT, TOP, RIGHT, BOTTOM;
-    private Paint brickPaint;
+    private final Paint brickPaint;
     private boolean active;
 
 
@@ -52,7 +52,7 @@ public class Brick {
         float ballY = ball.getY();
         float radius = ball.getRadius();
 
-        int arr[] = {0, 0};
+        int[] arr = new int[]{0, 0};
 
         if (ballY + radius < TOP)
             arr[0] -= 1;
@@ -76,10 +76,6 @@ public class Brick {
 
     public void setActive(boolean active) {
         this.active = active;
-    }
-
-    public void setBrickPaint(Paint brickPaint) {
-        this.brickPaint = brickPaint;
     }
 
     public void drew(Canvas canvas) {

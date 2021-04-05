@@ -6,15 +6,10 @@ import android.graphics.Paint;
 public class Paddle {
     private final float MOVEMENT, TOP, BOTTOM;
     private final Paint PADDLE_PAINT;
-    private float x, y, w, h;
     private float right, left;
 
     public Paddle(float x, float y, float width, float height, int color) {
         MOVEMENT = 100;
-        this.x = x;
-        this.y = y;
-        w = width;
-        h = height;
         TOP = y - height / 2;
         BOTTOM = y + height / 2;
         right = x + width / 2;
