@@ -47,13 +47,14 @@ public class Paddle {
         canvas.drawRect(x - this.RADIUS, y, x - this.RADIUS + w, y + h / 2, PADDLE_PAINT);
     }
 
+    // This function gets position of the ball and check if there is collision between the ball and the paddle.
     public boolean collied(Ball ball) {
 
         float xBallCord = ball.getX();
         float yBallCord = ball.getY();
         float ballRadius = ball.getRadius();
 
-        if ((xBallCord >= x - this.RADIUS && xBallCord <= x - this.RADIUS + w) && (yBallCord+ballRadius == y))
+        if ((xBallCord >= x - this.RADIUS && xBallCord <= x - this.RADIUS + w) && (yBallCord+ballRadius == y) || (xBallCord + ballRadius == x - this.RADIUS && yBallCord >= y))
             return true;
         return false;
     }
