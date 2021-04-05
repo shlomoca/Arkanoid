@@ -5,7 +5,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -13,11 +12,11 @@ import android.view.View;
 public class GameView extends View {
 
     private static final int GET_READY_STATE = 1, PLAYING_STATE = 2, GAME_OVER_STATE = 3;
-    private static final int NUM_OF_LIVES = 3, BALL_SIZE = 20, PADDLE_HEIGHT = 150;
+    private static final int NUM_OF_LIVES = 3, PADDLE_HEIGHT = 150;
     private static int moves = 0;
     private final int ROWS, COLS;
     private final int bg_color, paddle_color;
-    private int current_state, score, w, h;
+    private int current_state, score, w, h, ballRadius;
     private Thread ball_thread;
     private boolean alive;
     private Paint textPaint, gameSituation;
@@ -145,8 +144,9 @@ public class GameView extends View {
             moves = 0;
         }
         play_ball();
-        ball = new Ball((float) getWidth() / 2, (float) getHeight() - PADDLE_HEIGHT - BALL_SIZE, BALL_SIZE, Color.BLUE);
-        paddle = new Paddle((float) getWidth() / 2, (float) getHeight() - PADDLE_HEIGHT, bricks.getBrickWidth(), bricks.getBrickHeight()/2, paddle_color);
+        ballRadius = (int) bricks.getBrickHeight() / 2;
+        ball = new Ball((float) getWidth() / 2, (float) getHeight() - PADDLE_HEIGHT - ballRadius - 10, ballRadius, Color.BLUE);
+        paddle = new Paddle((float) getWidth() / 2, (float) getHeight() - PADDLE_HEIGHT, bricks.getBrickWidth(), bricks.getBrickHeight() / 2, paddle_color);
         current_state = GET_READY_STATE;
     }
 
@@ -165,12 +165,16 @@ public class GameView extends View {
                                 case GET_READY_STATE:
                                     break;
                                 case PLAYING_STATE:
+                                    // the case that the ball hit the ground.
                                     if (ball.move(getWidth(), getHeight())) {
-                                        if (LIVES.died()) {
+                                        if (LIVES.died())
                                             current_state = GAME_OVER_STATE;
-                                        }
+                                        else
+                                            init_game(false);
+
                                     }
-                                    else{
+                                    // check if ball touch paddle or brick.
+                                    else {
                                         paddle.collides(ball);
                                         bricks.collides(ball);
                                     }
