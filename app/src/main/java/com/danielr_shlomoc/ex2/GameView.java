@@ -119,7 +119,9 @@ public class GameView extends View {
                 }
                 break;
 
+
             case MotionEvent.ACTION_UP:
+
                 break;
 
         }
@@ -130,11 +132,10 @@ public class GameView extends View {
         if (reset) {
             bricks = new BrickCollection(ROWS, COLS, h, w);
             LIVES = new Lives(NUM_OF_LIVES, textPaint);
-
         }
         play_ball();
         ballRadius = (int) bricks.getBrickHeight() / 2;
-        ball = new Ball((float) getWidth() / 2, (float) getHeight() - PADDLE_HEIGHT - ballRadius-10 , ballRadius, Color.BLUE);
+        ball = new Ball((float) getWidth() / 2, (float) getHeight() - PADDLE_HEIGHT - ballRadius - 20, ballRadius, Color.BLUE);
         paddle = new Paddle((float) getWidth() / 2, (float) getHeight() - PADDLE_HEIGHT, bricks.getBrickWidth(), bricks.getBrickHeight() / 2, paddle_color);
         current_state = GET_READY_STATE;
     }
@@ -162,7 +163,6 @@ public class GameView extends View {
                                         }
                                         else
                                             init_game(false);
-
 
                                     }
                                     // check if ball touch paddle or brick.
