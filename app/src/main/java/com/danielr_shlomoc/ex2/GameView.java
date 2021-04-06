@@ -15,6 +15,7 @@ public class GameView extends View {
 
     private static final int GET_READY_STATE = 1, PLAYING_STATE = 2, GAME_OVER_STATE = 3,WON_BOARD = 4;
     private static final int NUM_OF_LIVES = 3, PADDLE_HEIGHT = 150;
+    private static  String gameOverText ;
     private final int ROWS, COLS;
     private final int bg_color, paddle_color;
     private int current_state, score, w, h, ballRadius;
@@ -24,11 +25,13 @@ public class GameView extends View {
     private Ball ball;
     private Lives LIVES;
     private Paddle paddle;
+    private Context context;
 
     public GameView(Context context, AttributeSet attrs) {
         super(context, attrs);
         bg_color = Color.BLACK;
         paddle_color = Color.GREEN;
+        this.context = context;
 
         score = 0;
 
@@ -70,11 +73,11 @@ public class GameView extends View {
                 text = "Click to PLAY!";
                 break;
         case GAME_OVER_STATE:
-                text = "GAME OVER - You Loss!";
+                text = "GAME OVER - "+gameOverText;
                 break;
-        case WON_BOARD:
-                text = "GAME OVER - You Win!";
-                break;
+//        case WON_BOARD:
+//                text = "GAME OVER - You Win!";
+//                break;
         }
 
         canvas.drawText(text, (float)getWidth() / 2, (float)getHeight() / 2, gameSituation);
@@ -116,9 +119,7 @@ public class GameView extends View {
                 }
                 break;
 
-
             case MotionEvent.ACTION_UP:
-
                 break;
 
         }
@@ -129,10 +130,11 @@ public class GameView extends View {
         if (reset) {
             bricks = new BrickCollection(ROWS, COLS, h, w);
             LIVES = new Lives(NUM_OF_LIVES, textPaint);
+
         }
         play_ball();
         ballRadius = (int) bricks.getBrickHeight() / 2;
-        ball = new Ball((float) getWidth() / 2, (float) getHeight() - PADDLE_HEIGHT - ballRadius - 10, ballRadius, Color.BLUE);
+        ball = new Ball((float) getWidth() / 2, (float) getHeight() - PADDLE_HEIGHT - ballRadius-10 , ballRadius, Color.BLUE);
         paddle = new Paddle((float) getWidth() / 2, (float) getHeight() - PADDLE_HEIGHT, bricks.getBrickWidth(), bricks.getBrickHeight() / 2, paddle_color);
         current_state = GET_READY_STATE;
     }
@@ -154,18 +156,23 @@ public class GameView extends View {
                                 case PLAYING_STATE:
                                     // the case that the ball hit the ground.
                                     if (ball.move(getWidth(), getHeight())) {
-                                        if (LIVES.died())
+                                        if (LIVES.died()){
+                                            gameOverText = "You Loss!";
                                             current_state = GAME_OVER_STATE;
+                                        }
                                         else
                                             init_game(false);
+
 
                                     }
                                     // check if ball touch paddle or brick.
                                     else {
                                         paddle.collides(ball);
-                                        bricks.collides(ball);
-                                        if(bricks.getGameOver())
-                                            current_state= WON_BOARD;
+                                        bricks.collides(ball,context);
+                                        if(bricks.getGameOver()){
+                                            gameOverText = "You Win!";
+                                            current_state= GAME_OVER_STATE;
+                                        }
                                     }
                                     break;
 

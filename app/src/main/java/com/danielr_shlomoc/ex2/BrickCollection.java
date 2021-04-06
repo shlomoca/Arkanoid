@@ -1,6 +1,8 @@
 package com.danielr_shlomoc.ex2;
 
+import android.content.Context;
 import android.graphics.Canvas;
+import android.media.MediaPlayer;
 
 public class BrickCollection {
 
@@ -37,7 +39,7 @@ public class BrickCollection {
         maximum = top;
     }
 
-    public void collides(Ball ball) {
+    public void collides(Ball ball, Context context) {
         //test if the ball is in the rectangle and if so test to see if it hit an active block
         int i = 0, j = 0;
         boolean inBlocksArea = ball.test_hit_rectangle(w, 0, minimum, maximum, false);
@@ -53,7 +55,9 @@ public class BrickCollection {
                 if (location[0] == 0 && location[1] == 0) {
                     if (active) {
                         brick.setActive(false);
-                        ball.hit_rectangle(brick.getRIGHT(), brick.getLEFT(), brick.getTOP(), brick.getBOTTOM());
+                        ball.hit_rectangle(brick.getRIGHT(), brick.getLEFT(), brick.getTOP(), brick.getBOTTOM(),false);
+                        MediaPlayer mp = MediaPlayer.create(context,R.raw.break_sound);
+                        mp.start();
                         alive_bricks --;
                         if (alive_bricks==0)
                             gameOver=true;
