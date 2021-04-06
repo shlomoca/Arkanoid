@@ -4,21 +4,21 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.Log;
 
-import java.util.Random;
-
 public class Ball {
     private final float radius;
     private final Paint ballPaint;
     private float x, y, dx, dy;
+    private boolean hit;
 
 
     public Ball(float x, float y, float radius, int color) {
-        float movement = -10;
+        float movement = -3;
         this.x = x;
         this.y = y;
         this.radius = radius;
         this.dx = movement;
         this.dy = movement;
+        hit=false;
 
         ballPaint = new Paint();
         ballPaint.setColor(color);
@@ -30,7 +30,7 @@ public class Ball {
         //moves the ball in the dx dy direction. If the ball hit the ground then return true
         x = x + dx;
         y = y + dy;
-        hit_borders(w,h);
+        hit_borders(w, h);
 
         return y + radius > h;
     }
@@ -55,35 +55,41 @@ public class Ball {
     public float getRadius() {
         return radius;
     }
+
     public boolean test_hit_rectangle(float right, float left, float top, float bottom, boolean moveBall) {
-        boolean pastRight = x+radius>=left
-                ,pastLeft = x-radius<=right
-                ,pastTop = y+radius>=top
-                ,pastBottom = y-radius<=bottom;
-        if(pastRight && pastLeft && pastTop && pastBottom){
-            if(moveBall){
+        boolean pastRight = x + radius >= left, pastLeft = x - radius <= right, pastTop = y + radius >= top, pastBottom = y - radius <= bottom;
+        boolean inFromLeft = x >= left, inFromRight = x <= right, inFromTop = y >= top, inFromBottom = y <= bottom,
+                isInRect = inFromLeft && inFromRight && inFromTop && inFromBottom;
+        Log.i("blabla", ""+hit);
+        if (pastRight && pastLeft && pastTop && pastBottom) {
+            if (moveBall && !hit) {
                 hit_rectangle(right, left, top, bottom);
+                hit = true;
             }
+
             return true;
         }
-       return false;
+        if(moveBall)
+        hit = false;
+        return false;
     }
 
-    public void hit_rectangle(float right, float left, float top, float bottom){
+    public void hit_rectangle(float right, float left, float top, float bottom) {
         /* test where the rectangle hit the ball and shift its direction*/
-        if(y >= bottom || y <= top)
+        if (y >= bottom || y <= top)
             dy = -dy;
-        if( x >= right || x <= left)
+        if (x >= right || x <= left)
             dx = -dx;
     }
-    private void hit_borders(float w, float h){
+
+    private void hit_borders(float w, float h) {
         /* test if the ball hit borders and move accordingly */
         // check border left or right
-        if (x - radius < 0 || x + radius > w )
+        if (x - radius < 0 || x + radius > w)
             dx = -dx;
 
         // bottom or top
-        if (y + radius > h || y - radius < 0){
+        if (y + radius > h || y - radius < 0) {
             dy = -dy;
         }
 
@@ -93,7 +99,7 @@ public class Ball {
         canvas.drawCircle(x, y, radius, ballPaint);
     }
 
-    public boolean collideWith(Paddle paddle, BrickCollection collection){
+    public boolean collideWith(Paddle paddle, BrickCollection collection) {
 
         return false;
     }

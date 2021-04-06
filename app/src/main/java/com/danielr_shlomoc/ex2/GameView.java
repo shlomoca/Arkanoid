@@ -101,6 +101,7 @@ public class GameView extends View {
             case MotionEvent.ACTION_MOVE:
                 switch (current_state) {
                     case GAME_OVER_STATE:
+                    case WON_BOARD:
                         init_game(true);
                     case GET_READY_STATE:
                     default:
@@ -132,7 +133,7 @@ public class GameView extends View {
         }
         play_ball();
         ballRadius = (int) bricks.getBrickHeight() / 2;
-        ball = new Ball((float) getWidth() / 2, (float) getHeight() - PADDLE_HEIGHT - ballRadius - 10, ballRadius, Color.BLUE);
+        ball = new Ball((float) getWidth() / 2, (float) getHeight() - PADDLE_HEIGHT - ballRadius - 20, ballRadius, Color.BLUE);
         paddle = new Paddle((float) getWidth() / 2, (float) getHeight() - PADDLE_HEIGHT, bricks.getBrickWidth(), bricks.getBrickHeight() / 2, paddle_color);
         current_state = GET_READY_STATE;
     }
