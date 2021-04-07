@@ -39,9 +39,9 @@ public class BrickCollection {
         maximum = top;
     }
 
-    public void collides(Ball ball, Context context) {
+    public int collides(Ball ball, Context context) {
         //test if the ball is in the rectangle and if so test to see if it hit an active block
-        int i = 0, j = 0;
+        int i = 0, j = 0, score =0 ;
         boolean inBlocksArea = ball.test_hit_rectangle(w, 0, minimum, maximum, false);
         while (inBlocksArea) {
             if (i >= rows || i < 0 || j >= cols || j < 0)
@@ -55,9 +55,10 @@ public class BrickCollection {
                 if (location[0] == 0 && location[1] == 0) {
                     if (active) {
                         brick.setActive(false);
-                        ball.hit_rectangle(brick.getRIGHT(), brick.getLEFT(), brick.getTOP(), brick.getBOTTOM(),false);
+                        ball.hit_rectangle(brick.getRIGHT(), brick.getLEFT(), brick.getTOP(), brick.getBOTTOM());
                         MediaPlayer mp = MediaPlayer.create(context,R.raw.break_sound);
                         mp.start();
+                        score += 5;
                         alive_bricks --;
                         if (alive_bricks==0)
                             gameOver=true;
@@ -70,6 +71,7 @@ public class BrickCollection {
                 inBlocksArea = false;
             }
         }
+    return score;
 
 
     }
