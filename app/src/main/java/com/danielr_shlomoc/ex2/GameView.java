@@ -22,9 +22,7 @@ public class GameView extends View {
     private final int bg_color, paddle_color;
     private int current_state, score, w, h, ballRadius;
     private MediaPlayer mediaPlayer;
-    private Thread ball_thread;
     private boolean paddle_move, paddle_direction;
-    private static  String gameOverText ;
     private Thread ball_thread, paddle_thread;
     private Paint textPaint, gameSituation;
     private BrickCollection bricks;
