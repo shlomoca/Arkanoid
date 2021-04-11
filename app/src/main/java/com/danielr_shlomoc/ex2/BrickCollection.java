@@ -3,6 +3,7 @@ package com.danielr_shlomoc.ex2;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.media.MediaPlayer;
+import android.provider.MediaStore;
 
 public class BrickCollection {
 
@@ -39,7 +40,7 @@ public class BrickCollection {
         maximum = top;
     }
 
-    public int collides(Ball ball, Context context) {
+    public int collides(Ball ball, Context context, MediaPlayer mp) {
         //test if the ball is in the rectangle and if so test to see if it hit an active block
         int i = 0, j = 0, score =0 ;
         boolean inBlocksArea = ball.test_hit_rectangle(w, 0, minimum, maximum, false);
@@ -56,7 +57,7 @@ public class BrickCollection {
                     if (active) {
                         brick.setActive(false);
                         ball.hit_rectangle(brick.getRIGHT(), brick.getLEFT(), brick.getTOP(), brick.getBOTTOM());
-                        MediaPlayer mp = MediaPlayer.create(context,R.raw.break_sound);
+//                        MediaPlayer mp = MediaPlayer.create(context,R.raw.break_sound);
                         mp.start();
                         score += 5;
                         alive_bricks --;

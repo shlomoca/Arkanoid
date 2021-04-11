@@ -4,7 +4,9 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.media.MediaPlayer;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -19,6 +21,7 @@ public class GameView extends View {
     private final int ROWS, COLS;
     private final int bg_color, paddle_color;
     private int current_state, score, w, h, ballRadius;
+    private MediaPlayer mediaPlayer;
     private Thread ball_thread;
     private Paint textPaint, gameSituation;
     private BrickCollection bricks;
@@ -90,12 +93,12 @@ public class GameView extends View {
         this.h = h;
         init_game(true);
 
-
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         float tx = event.getX();
+        Log.d("myLog"," here the situation been to every nation");
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -126,17 +129,31 @@ public class GameView extends View {
         return true;
     }
 
+
+
     private void init_game(boolean reset) {
         if (reset) {
             bricks = new BrickCollection(ROWS, COLS, h, w);
             LIVES = new Lives(NUM_OF_LIVES, textPaint);
             score = 0;
+            stopPlaying();
+            mediaPlayer =  MediaPlayer.create(context,R.raw.break_sound);
         }
         play_ball();
         ballRadius = (int) bricks.getBrickHeight() / 2;
         ball = new Ball((float) getWidth() / 2, (float) getHeight() - PADDLE_HEIGHT - ballRadius - 20, ballRadius, Color.BLUE);
         paddle = new Paddle((float) getWidth() / 2, (float) getHeight() - PADDLE_HEIGHT, bricks.getBrickWidth(), bricks.getBrickHeight() / 2, paddle_color);
         current_state = GET_READY_STATE;
+    }
+
+    private void stopPlaying() {
+        //stop the music from playing
+        if (mediaPlayer != null) {
+
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
     }
 
     public void play_ball() {
@@ -159,6 +176,8 @@ public class GameView extends View {
                                         if (LIVES.died()) {
                                             gameOverText = "You Loss!";
                                             current_state = GAME_OVER_STATE;
+                                            stopPlaying();
+
                                         } else
                                             init_game(false);
 
@@ -169,7 +188,7 @@ public class GameView extends View {
                                         paddle.collides(ball);
 
                                         // check if the ball hit brick and return the points.
-                                        int temp = bricks.collides(ball, context);
+                                        int temp = bricks.collides(ball, context,mediaPlayer);
                                         if (temp != 0)
                                             score += temp * LIVES.getGame_lives();
 
