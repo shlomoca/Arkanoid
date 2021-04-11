@@ -9,7 +9,7 @@ public class Paddle {
     private float right, left;
 
     public Paddle(float x, float y, float width, float height, int color) {
-        MOVEMENT = 100;
+        MOVEMENT = 15;
         TOP = y - height / 2;
         BOTTOM = y + height / 2;
         right = x + width / 2;

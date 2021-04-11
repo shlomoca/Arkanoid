@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -15,11 +16,12 @@ public class GameView extends View {
 
     private static final int GET_READY_STATE = 1, PLAYING_STATE = 2, GAME_OVER_STATE = 3,WON_BOARD = 4;
     private static final int NUM_OF_LIVES = 3, PADDLE_HEIGHT = 150;
-    private static  String gameOverText ;
     private final int ROWS, COLS;
     private final int bg_color, paddle_color;
     private int current_state, score, w, h, ballRadius;
-    private Thread ball_thread;
+    private boolean paddle_move, paddle_direction;
+    private static  String gameOverText ;
+    private Thread ball_thread, paddle_thread;
     private Paint textPaint, gameSituation;
     private BrickCollection bricks;
     private Ball ball;
@@ -75,9 +77,7 @@ public class GameView extends View {
         case GAME_OVER_STATE:
                 text = "GAME OVER - "+gameOverText;
                 break;
-//        case WON_BOARD:
-//                text = "GAME OVER - You Win!";
-//                break;
+
         }
 
         canvas.drawText(text, (float)getWidth() / 2, (float)getHeight() / 2, gameSituation);
@@ -101,6 +101,8 @@ public class GameView extends View {
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                paddle_move=true;
+                move_paddle();
             case MotionEvent.ACTION_MOVE:
                 switch (current_state) {
                     case GAME_OVER_STATE:
@@ -111,19 +113,15 @@ public class GameView extends View {
                         invalidate();
                         break;
                     case PLAYING_STATE:
-                        if (tx < (float) w / 2)
-                            paddle.move_left();
-                        else
-                            paddle.move_right(w);
+                        paddle_direction = tx >= (float) w / 2;
+                        break;
 
                 }
                 break;
 
-
             case MotionEvent.ACTION_UP:
-
+                paddle_move=false;
                 break;
-
         }
         return true;
     }
@@ -163,7 +161,6 @@ public class GameView extends View {
                                         }
                                         else
                                             init_game(false);
-
                                     }
                                     // check if ball touch paddle or brick.
                                     else {
@@ -175,19 +172,40 @@ public class GameView extends View {
                                         }
                                     }
                                     break;
-
                             }
-
                             postInvalidate();
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
+                        Log.i("threadManager", "killed: call the police");
                     }
                     ball_thread = null;
                 }
             });
             ball_thread.start();
-            invalidate();
+        }
+    }
+
+    public void move_paddle() {
+        if (paddle_thread == null) {
+            paddle_thread = new Thread(new Runnable() {
+                public void run() {
+                    while (paddle_move) {
+                        try {
+                            sleep(10);
+                            if (paddle_direction)
+                                paddle.move_right(w);
+                            else
+                                paddle.move_left();
+                            postInvalidate();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    paddle_thread = null;
+                }
+            });
+            paddle_thread.start();
         }
     }
 

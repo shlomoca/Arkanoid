@@ -43,35 +43,28 @@ public class BrickCollection {
         //test if the ball is in the rectangle and if so test to see if it hit an active block
         int i = 0, j = 0;
         boolean inBlocksArea = ball.test_hit_rectangle(w, 0, minimum, maximum, false);
-        while (inBlocksArea) {
-            if (i >= rows || i < 0 || j >= cols || j < 0)
-                break;
-
-            Brick brick = bricks[i][j];
-            boolean active = brick.getActive();
-
-            int[] location = brick.collided(ball);
-            if (location != null) {
-                if (location[0] == 0 && location[1] == 0) {
+        if (inBlocksArea) {
+            for (i = 0; i < rows; i++) {
+                for (j = 0; j < cols; j++) {
+                    Brick brick = bricks[i][j];
+                    boolean active = brick.getActive();
                     if (active) {
-                        brick.setActive(false);
-                        ball.hit_rectangle(brick.getRIGHT(), brick.getLEFT(), brick.getTOP(), brick.getBOTTOM(),false);
-                        MediaPlayer mp = MediaPlayer.create(context,R.raw.break_sound);
-                        mp.start();
-                        alive_bricks --;
-                        if (alive_bricks==0)
-                            gameOver=true;
-                    } else //hit non active brick stop looking for the brick
-                        break;
+                        int[] location = brick.collided(ball);
+                        if (location[0] == 0 && location[1] == 0) {
+                            brick.setActive(false);
+                            ball.hit_rectangle(brick.getRIGHT(), brick.getLEFT(), brick.getTOP(), brick.getBOTTOM());
+                            MediaPlayer mp = MediaPlayer.create(context, R.raw.break_sound);
+                            mp.start();
+                            alive_bricks--;
+                            if (alive_bricks == 0)
+                                gameOver = true;
+                            break;
+                        }
+                    }
+
                 }
-                i += location[0];
-                j += location[1];
-            } else {
-                inBlocksArea = false;
             }
         }
-
-
     }
 
     // This function draw the bricks on the given canvas.

@@ -3,6 +3,9 @@ package com.danielr_shlomoc.ex2;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.Log;
+import android.util.Range;
+
+import java.util.Random;
 
 public class Ball {
     private final float radius;
@@ -13,11 +16,13 @@ public class Ball {
 
     public Ball(float x, float y, float radius, int color) {
         float movement = -3;
+        this.radius = radius;
+
+
         this.x = x;
         this.y = y;
-        this.radius = radius;
-        this.dx = movement;
-        this.dy = movement;
+        this.dx = getRandomFloat(true);
+        this.dy = getRandomFloat(false);
         hit=false;
 
         ballPaint = new Paint();
@@ -33,6 +38,21 @@ public class Ball {
         hit_borders(w, h);
 
         return y + radius > h;
+    }
+
+    private float getRandomFloat(boolean isX){
+        Random rand = new Random();
+        float miniMax = 10;
+        float res = rand.nextFloat() * (radius);
+
+        res -= radius/2;
+        if(res>0&& res <miniMax)
+            res = miniMax;
+        if (res<0 && res>-miniMax)
+            res = -miniMax;
+        return res;
+
+
     }
 
 
@@ -58,10 +78,10 @@ public class Ball {
 
     public boolean test_hit_rectangle(float right, float left, float top, float bottom, boolean moveBall) {
         boolean pastRight = x + radius >= left, pastLeft = x - radius <= right, pastTop = y + radius >= top, pastBottom = y - radius <= bottom;
-        boolean inFromLeft = x >= left, inFromRight = x <= right, inFromTop = y >= top, inFromBottom = y <= bottom,
-                isInRect = inFromLeft && inFromRight && inFromTop && inFromBottom;
-        Log.i("blabla", ""+hit);
         if (pastRight && pastLeft && pastTop && pastBottom) {
+            if(hit && moveBall){
+                Log.d("ShlomoDebug", "ball hit already so no move");
+            }
             if (moveBall && !hit) {
                 hit_rectangle(right, left, top, bottom);
                 hit = true;
