@@ -17,8 +17,6 @@ public class Ball {
     public Ball(float x, float y, float radius, int color) {
         float movement = -3;
         this.radius = radius;
-
-
         this.x = x;
         this.y = y;
         this.dx = getRandomFloat(true);

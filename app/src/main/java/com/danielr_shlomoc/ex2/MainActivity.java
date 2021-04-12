@@ -70,10 +70,14 @@ public class MainActivity extends AppCompatActivity {
     public void notify(View view) {
 
 
-        if (batteryReceiver.getBatteryLevel() == 10 && !batteryReceiver.isCharging()) {
+        if (batteryReceiver.getBatteryLevel() < 10 && !batteryReceiver.isCharging()) {
             Log.d("myLog", "in notify");
             // Create & show the Notification. on Build.VERSION < OREO notification avoid CHANEL_ID
-            Notification notification = new NotificationCompat.Builder(this, "1").setSmallIcon(R.drawable.round_logo).setContentTitle("This is notify title").setContentText("Battery low").setPriority(NotificationCompat.PRIORITY_HIGH).build();
+            Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                    .setSmallIcon(R.drawable.ic_notification)
+                    .setContentTitle("Battery low")
+                    .setContentText("Please connect the device to a power source")
+                    .setPriority(NotificationCompat.PRIORITY_HIGH).build();
             notificationManager.notify(1, notification);
         }
 
