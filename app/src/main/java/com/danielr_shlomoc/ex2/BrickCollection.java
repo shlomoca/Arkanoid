@@ -3,7 +3,6 @@ package com.danielr_shlomoc.ex2;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.media.MediaPlayer;
-import android.provider.MediaStore;
 
 public class BrickCollection {
 
@@ -42,7 +41,7 @@ public class BrickCollection {
 
     public int collides(Ball ball, Context context, MediaPlayer mp) {
         //test if the ball is in the rectangle and if so test to see if it hit an active block
-        int i = 0, j = 0, score =0 ;
+        int i = 0, j = 0, score = 0;
         boolean inBlocksArea = ball.test_hit_rectangle(w, 0, minimum, maximum, false);
         if (inBlocksArea) {
             for (i = 0; i < rows; i++) {
@@ -54,7 +53,7 @@ public class BrickCollection {
                         if (location[0] == 0 && location[1] == 0) {
                             brick.setActive(false);
                             ball.hit_rectangle(brick.getRIGHT(), brick.getLEFT(), brick.getTOP(), brick.getBOTTOM());
-                            mp.start();
+                            playSound(context);
                             score += 5;
                             alive_bricks--;
                             if (alive_bricks == 0)
@@ -66,9 +65,21 @@ public class BrickCollection {
                 }
             }
         }
-    return score;
+        return score;
 
 
+    }
+
+    private void playSound(Context context){
+        MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.break_sound);
+        mediaPlayer.start();
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            public void onCompletion(MediaPlayer mp) {
+                mp.reset();
+                mp.release();
+
+            };
+        });
     }
 
     // This function draw the bricks on the given canvas.

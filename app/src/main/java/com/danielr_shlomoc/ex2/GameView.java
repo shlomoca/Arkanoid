@@ -21,7 +21,7 @@ public class GameView extends View {
     private final int ROWS, COLS;
     private final int bg_color, paddle_color;
     private int current_state, score, w, h, ballRadius;
-    private MediaPlayer mediaPlayer;
+    private MediaPlayer mediaPlayer = null;
     private boolean paddle_move, paddle_direction;
     private Thread ball_thread, paddle_thread;
     private Paint textPaint, gameSituation;
@@ -99,7 +99,7 @@ public class GameView extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         float tx = event.getX();
-        Log.d("touchTest"," here the situation been to every nation");
+
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -133,13 +133,13 @@ public class GameView extends View {
             bricks = new BrickCollection(ROWS, COLS, h, w);
             LIVES = new Lives(NUM_OF_LIVES, textPaint);
             score = 0;
-            stopPlaying();
-            mediaPlayer =  MediaPlayer.create(context,R.raw.break_sound);
+//            stopPlaying();
+
         }
-        play_ball();
         ballRadius = (int) bricks.getBrickHeight() / 2;
         ball = new Ball((float) getWidth() / 2, (float) getHeight() - PADDLE_HEIGHT - ballRadius - 20, ballRadius, Color.BLUE);
         paddle = new Paddle((float) getWidth() / 2, (float) getHeight() - PADDLE_HEIGHT, bricks.getBrickWidth(), bricks.getBrickHeight() / 2, paddle_color);
+        play_ball();
         current_state = GET_READY_STATE;
     }
 
@@ -173,7 +173,7 @@ public class GameView extends View {
                                         if (LIVES.died()) {
                                             gameOverText = "You Loss!";
                                             current_state = GAME_OVER_STATE;
-                                            stopPlaying();
+//                                            stopPlaying();
 
                                         } else
                                             init_game(false);

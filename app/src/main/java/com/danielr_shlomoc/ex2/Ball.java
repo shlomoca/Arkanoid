@@ -3,7 +3,6 @@ package com.danielr_shlomoc.ex2;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.Log;
-import android.util.Range;
 
 import java.util.Random;
 
@@ -15,13 +14,18 @@ public class Ball {
 
 
     public Ball(float x, float y, float radius, int color) {
-        float movement = -3;
+        float movement = 10;
         this.radius = radius;
         this.x = x;
         this.y = y;
-        this.dx = getRandomFloat(true);
-        this.dy = getRandomFloat(false);
-        hit=false;
+//        this.dx = getRandomFloat(true);
+//        this.dy = getRandomFloat(false);
+        Random rand = new Random();
+        float angle = 30 + rand.nextFloat() * (150 - 30);
+        Log.d("angle",angle+"");
+        this.dx = (float) (movement * Math.cos(Math.toRadians(angle)));
+        this.dy = (float) (-movement * (float) (Math.sin(Math.toRadians(angle))));
+        hit = false;
 
         ballPaint = new Paint();
         ballPaint.setColor(color);
@@ -38,15 +42,15 @@ public class Ball {
         return y + radius > h;
     }
 
-    private float getRandomFloat(boolean isX){
+    private float getRandomFloat(boolean isX) {
         Random rand = new Random();
         float miniMax = 10;
         float res = rand.nextFloat() * (radius);
 
-        res -= radius/2;
-        if(res>0&& res <miniMax)
+        res -= radius / 2;
+        if (res > 0 && res < miniMax)
             res = miniMax;
-        if (res<0 && res>-miniMax)
+        if (res < 0 && res > -miniMax)
             res = -miniMax;
         return res;
 
@@ -77,7 +81,7 @@ public class Ball {
     public boolean test_hit_rectangle(float right, float left, float top, float bottom, boolean moveBall) {
         boolean pastRight = x + radius >= left, pastLeft = x - radius <= right, pastTop = y + radius >= top, pastBottom = y - radius <= bottom;
         if (pastRight && pastLeft && pastTop && pastBottom) {
-            if(hit && moveBall){
+            if (hit && moveBall) {
                 Log.d("ShlomoDebug", "ball hit already so no move");
             }
             if (moveBall && !hit) {
@@ -87,8 +91,8 @@ public class Ball {
 
             return true;
         }
-        if(moveBall)
-        hit = false;
+        if (moveBall)
+            hit = false;
         return false;
     }
 
