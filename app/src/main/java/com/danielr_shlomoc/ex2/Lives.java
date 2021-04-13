@@ -11,7 +11,7 @@ public class Lives {
     private final int NUM_OF_LIVES, LIVES_HEIGHT, LIVES_MARGIN, LIVES_RADIUS;
     private int game_lives;
 
-    public Lives(int num_of_lives, Paint p) {
+    public Lives(int num_of_lives, Paint p, int ballColor) {
         NUM_OF_LIVES = num_of_lives;
         game_lives = num_of_lives;
         LIVES_HEIGHT = 30;
@@ -21,17 +21,17 @@ public class Lives {
         ALIVE = new Paint();
         DEAD = new Paint();
         TEXT_PAINT = p;
-        set_painters();
+        set_painters(ballColor);
 
     }
 
-    private void set_painters(){
+    private void set_painters(int ballColor){
 
-        ALIVE.setColor(Color.GREEN);
+        ALIVE.setColor(ballColor);
         ALIVE.setStrokeWidth(10);
         ALIVE.setStyle(Paint.Style.FILL);
 
-        DEAD.setColor(Color.GREEN);
+        DEAD.setColor(ballColor);
         DEAD.setStrokeWidth(10);
         DEAD.setStyle(Paint.Style.STROKE);
 

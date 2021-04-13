@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.media.MediaPlayer;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -19,11 +18,11 @@ public class GameView extends View {
     private static final int NUM_OF_LIVES = 3, PADDLE_HEIGHT = 150;
     private static String gameOverText;
     private final int ROWS, COLS;
-    private final int bg_color, paddle_color;
+    private final int bg_color, paddle_color, ballColor;
     private int current_state, score, w, h, ballRadius;
     private MediaPlayer mediaPlayer = null;
     private boolean paddle_move, paddle_direction;
-    private Thread ball_thread, paddle_thread;
+    private Thread animationThread;
     private Paint textPaint, gameSituation;
     private BrickCollection bricks;
     private Ball ball;
@@ -35,6 +34,7 @@ public class GameView extends View {
         super(context, attrs);
         bg_color = Color.BLACK;
         paddle_color = Color.GREEN;
+        ballColor = Color.MAGENTA;
         this.context = context;
 
         score = 0;
@@ -79,12 +79,50 @@ public class GameView extends View {
             case GAME_OVER_STATE:
                 text = "GAME OVER - " + gameOverText;
                 break;
+            case PLAYING_STATE:
+                playBall();
+                if (paddle_move) {
+                    if (paddle_direction)
+                        paddle.move_right(w);
+                    else
+                        paddle.move_left();
+                }
 
         }
 
         canvas.drawText(text, (float) getWidth() / 2, (float) getHeight() / 2, gameSituation);
 
 
+    }
+
+    private void playBall() {
+
+        // the case that the ball hit the ground.
+        if (ball.move(getWidth(), getHeight())) {
+            if (LIVES.died()) {
+                gameOverText = "You Loss!";
+                current_state = GAME_OVER_STATE;
+                invalidate();
+            } else
+                init_game(false);
+        }
+        // check if ball touch paddle or brick.
+        else {
+            // check if ball hit the paddle
+            paddle.collides(ball);
+
+            // check if the ball hit brick and return the points.
+            int temp = bricks.collides(ball, context, mediaPlayer);
+            if (temp != 0)
+                score += temp * LIVES.getGame_lives();
+
+
+            if (bricks.getGameOver()) {
+                gameOverText = "You Win!";
+                current_state = GAME_OVER_STATE;
+                invalidate();
+            }
+        }
     }
 
     @Override
@@ -102,19 +140,20 @@ public class GameView extends View {
 
 
         switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                paddle_move=true;
-                move_paddle();
             case MotionEvent.ACTION_MOVE:
+            case MotionEvent.ACTION_DOWN:
                 switch (current_state) {
                     case GAME_OVER_STATE:
                         init_game(true);
+                        invalidate();
+                        break;
                     case GET_READY_STATE:
                     default:
                         current_state = PLAYING_STATE;
-                        invalidate();
+                        animateBoard();
                         break;
                     case PLAYING_STATE:
+                        paddle_move = true;
                         paddle_direction = tx >= (float) w / 2;
                         break;
 
@@ -122,114 +161,41 @@ public class GameView extends View {
                 break;
 
             case MotionEvent.ACTION_UP:
-                paddle_move=false;
+                paddle_move = false;
                 break;
         }
         return true;
     }
 
     private void init_game(boolean reset) {
+        //initialize the game to game ready state.
         if (reset) {
             bricks = new BrickCollection(ROWS, COLS, h, w);
-            LIVES = new Lives(NUM_OF_LIVES, textPaint);
+            LIVES = new Lives(NUM_OF_LIVES, textPaint, ballColor);
             score = 0;
-//            stopPlaying();
-
         }
         ballRadius = (int) bricks.getBrickHeight() / 2;
-        ball = new Ball((float) getWidth() / 2, (float) getHeight() - PADDLE_HEIGHT - ballRadius - 20, ballRadius, Color.BLUE);
+        ball = new Ball((float) getWidth() / 2, (float) getHeight() - PADDLE_HEIGHT - ballRadius - 20, ballRadius, ballColor);
         paddle = new Paddle((float) getWidth() / 2, (float) getHeight() - PADDLE_HEIGHT, bricks.getBrickWidth(), bricks.getBrickHeight() / 2, paddle_color);
-        play_ball();
         current_state = GET_READY_STATE;
     }
 
-    private void stopPlaying() {
-        //stop the music from playing
-        if (mediaPlayer != null) {
-
-            mediaPlayer.stop();
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
-    }
-
-    public void play_ball() {
-        //sets a timer in the app to show the user the amount of time he is playing
-        if (ball_thread == null) {
-            //if timer is already set
-            ball_thread = new Thread(new Runnable() {
+    public void animateBoard() {
+        if (animationThread == null) {
+            animationThread = new Thread(new Runnable() {
                 public void run() {
-                    while (current_state != GAME_OVER_STATE) {
+                    while (current_state == PLAYING_STATE) {
                         try {
                             sleep(10);
-                            switch (current_state) {
-                                default:
-                                case GET_READY_STATE:
-                                case GAME_OVER_STATE:
-                                    break;
-                                case PLAYING_STATE:
-                                    // the case that the ball hit the ground.
-                                    if (ball.move(getWidth(), getHeight())) {
-                                        if (LIVES.died()) {
-                                            gameOverText = "You Loss!";
-                                            current_state = GAME_OVER_STATE;
-//                                            stopPlaying();
-
-                                        } else
-                                            init_game(false);
-                                    }
-                                    // check if ball touch paddle or brick.
-                                    else {
-                                        // check if ball hit the paddle
-                                        paddle.collides(ball);
-
-                                        // check if the ball hit brick and return the points.
-                                        int temp = bricks.collides(ball, context,mediaPlayer);
-                                        if (temp != 0)
-                                            score += temp * LIVES.getGame_lives();
-
-
-                                        if (bricks.getGameOver()) {
-                                            gameOverText = "You Win!";
-                                            current_state = GAME_OVER_STATE;
-                                        }
-                                    }
-                                    break;
-
-                            }
-
                             postInvalidate();
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
                     }
-                    ball_thread = null;
+                    animationThread = null;
                 }
             });
-            ball_thread.start();
-        }
-    }
-
-    public void move_paddle() {
-        if (paddle_thread == null) {
-            paddle_thread = new Thread(new Runnable() {
-                public void run() {
-                    while (paddle_move) {
-                        try {
-                            sleep(10);
-                            if (paddle_direction)
-                                paddle.move_right(w);
-                            else
-                                paddle.move_left();
-                            postInvalidate();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    paddle_thread = null;
-                }
-            });
-            paddle_thread.start();
+            animationThread.start();
         }
     }
 
