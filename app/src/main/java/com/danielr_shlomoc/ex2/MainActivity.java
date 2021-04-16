@@ -3,15 +3,12 @@ package com.danielr_shlomoc.ex2;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String CHANNEL_ID = "channel_main";
     private static final CharSequence CHANNEL_NAME = "Main Channel";
     private boolean notification;
-    public static boolean pause;
+    public static boolean pause = false;
 
 
     @Override
@@ -41,7 +38,6 @@ public class MainActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).hide();
         //remove notification bar
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
 
 
         notification = false;
@@ -84,18 +80,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         Log.d("lifeCycle","in onPause()");
-
         pause = true;
-
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         Log.d("lifeCycle","in onResume()");
-        pause = false;
-
     }
 
     @Override

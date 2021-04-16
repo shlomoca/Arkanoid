@@ -40,6 +40,11 @@ public class Ball {
         ballPaint.setColor(color);
         ballPaint.setStrokeWidth(10);
         ballPaint.setStyle(Paint.Style.FILL);
+
+//        this.y = y-100;
+//        this.dx =-8;
+//        this.dy =7;
+
     }
 
     public boolean move(int w, int h) {

@@ -1,7 +1,6 @@
 package com.danielr_shlomoc.ex2;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -10,9 +9,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-
-import androidx.annotation.NonNull;
-
 import static java.lang.Thread.sleep;
 
 
@@ -33,7 +29,7 @@ public class GameView extends View {
     private Lives LIVES;
     private Paddle paddle;
     private Context context;
-    private MainActivity mainActivity;
+//    private MainActivity mainActivity;
 
 
     public GameView(Context context, AttributeSet attrs) {
@@ -45,7 +41,7 @@ public class GameView extends View {
 
 
         score = 0;
-        mainActivity = new MainActivity();
+//        mainActivity = new MainActivity();
 
 
         // random number in range 2-6
@@ -70,21 +66,6 @@ public class GameView extends View {
 
     }
 
-    @Override
-    protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
-        super.onVisibilityChanged(changedView, visibility);
-
-        //onResume called
-//        if (visibility == View.VISIBLE) {
-//            Log.d("game", "in onResume()");
-//            pause = false;
-//        }
-//        // onPause() called
-//        else {
-//            pause = true;
-//            Log.d("game", "in onPause()");
-//        }
-    }
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -156,6 +137,7 @@ public class GameView extends View {
         super.onSizeChanged(w, h, oldw, oldh);
         this.w = w;
         this.h = h;
+        if(!MainActivity.pause)
         init_game(true);
 
     }
@@ -211,13 +193,9 @@ public class GameView extends View {
         if (animationThread == null) {
             animationThread = new Thread(new Runnable() {
 
-
                 public void run() {
                     while (current_state == PLAYING_STATE) {
-                        boolean pause = mainActivity.pause;
-                        Log.d("game","pause "+pause);
-                        if (pause)
-                            continue;
+
                         try {
                             sleep(10);
                             postInvalidate();
