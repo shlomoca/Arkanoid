@@ -1,6 +1,7 @@
 package com.danielr_shlomoc.ex2;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.Log;
 
@@ -14,17 +15,25 @@ public class Ball {
 
 
     public Ball(float x, float y, float radius, int color) {
-        float movement = 10;
+        float movement = 15;
         this.radius = radius;
         this.x = x;
         this.y = y;
+        float angle;
 //        this.dx = getRandomFloat(true);
 //        this.dy = getRandomFloat(false);
+
+        // enable angle of 120 except angle of 90
         Random rand = new Random();
-        float angle = 30 + rand.nextFloat() * (150 - 30);
-        Log.d("angle",angle+"");
+        do {
+            angle = 30 + rand.nextFloat() * (150 - 30);
+        } while (angle >= 85 && angle <= 95);
+        Log.d("angle", angle + "");
+
         this.dx = (float) (movement * Math.cos(Math.toRadians(angle)));
         this.dy = (float) (-movement * (float) (Math.sin(Math.toRadians(angle))));
+        Log.d("angle", "x-velocity: " + this.dx + "\ny-velocity: " + this.dy);
+
         hit = false;
 
         ballPaint = new Paint();
@@ -100,8 +109,10 @@ public class Ball {
         /* test where the rectangle hit the ball and shift its direction*/
         if (y >= bottom || y <= top)
             dy = -dy;
-        if (x >= right || x <= left)
+        if (x >= right || x <= left){
+            Log.d("blof","x: "+x+"\nleft: "+left+", right: "+right);
             dx = -dx;
+        }
     }
 
     private void hit_borders(float w, float h) {
@@ -121,10 +132,7 @@ public class Ball {
         canvas.drawCircle(x, y, radius, ballPaint);
     }
 
-    public boolean collideWith(Paddle paddle, BrickCollection collection) {
 
-        return false;
-    }
 
 }
 

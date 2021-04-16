@@ -1,13 +1,17 @@
 package com.danielr_shlomoc.ex2;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.media.MediaPlayer;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+
+import androidx.annotation.NonNull;
 
 import static java.lang.Thread.sleep;
 
@@ -29,15 +33,20 @@ public class GameView extends View {
     private Lives LIVES;
     private Paddle paddle;
     private Context context;
+    private MainActivity mainActivity;
+
 
     public GameView(Context context, AttributeSet attrs) {
         super(context, attrs);
         bg_color = Color.BLACK;
-        paddle_color = Color.GREEN;
-        ballColor = Color.MAGENTA;
+        paddle_color = Color.WHITE;
+        ballColor = Color.rgb(0,102,0);
         this.context = context;
 
+
         score = 0;
+        mainActivity = new MainActivity();
+
 
         // random number in range 2-6
         ROWS = (int) (Math.random() * 5) + 2;
@@ -54,7 +63,7 @@ public class GameView extends View {
 
         // game situation text pen
         gameSituation = new Paint();
-        gameSituation.setColor(Color.GREEN);
+        gameSituation.setColor(Color.WHITE);
         gameSituation.setTextSize(80);
         gameSituation.setFakeBoldText(true);
         gameSituation.setTextAlign(Paint.Align.CENTER);
@@ -62,13 +71,29 @@ public class GameView extends View {
     }
 
     @Override
+    protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
+        super.onVisibilityChanged(changedView, visibility);
+
+        //onResume called
+//        if (visibility == View.VISIBLE) {
+//            Log.d("game", "in onResume()");
+//            pause = false;
+//        }
+//        // onPause() called
+//        else {
+//            pause = true;
+//            Log.d("game", "in onPause()");
+//        }
+    }
+
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         canvas.drawColor(bg_color);
-        canvas.drawText("Score: " + score, 30, 80, textPaint);
         ball.draw(canvas);
         bricks.drawBricks(canvas);
         paddle.draw(canvas);
+        canvas.drawText("Score: " + score, 30, 80, textPaint);
         LIVES.draw(canvas);
         String text = "";
 
@@ -110,6 +135,7 @@ public class GameView extends View {
         else {
             // check if ball hit the paddle
             paddle.collides(ball);
+
 
             // check if the ball hit brick and return the points.
             int temp = bricks.collides(ball, context, mediaPlayer);
@@ -173,6 +199,7 @@ public class GameView extends View {
             bricks = new BrickCollection(ROWS, COLS, h, w);
             LIVES = new Lives(NUM_OF_LIVES, textPaint, ballColor);
             score = 0;
+            Log.d("lifeCycle", "new board");
         }
         ballRadius = (int) bricks.getBrickHeight() / 2;
         ball = new Ball((float) getWidth() / 2, (float) getHeight() - PADDLE_HEIGHT - ballRadius - 20, ballRadius, ballColor);
@@ -183,8 +210,14 @@ public class GameView extends View {
     public void animateBoard() {
         if (animationThread == null) {
             animationThread = new Thread(new Runnable() {
+
+
                 public void run() {
                     while (current_state == PLAYING_STATE) {
+                        boolean pause = mainActivity.pause;
+                        Log.d("game","pause "+pause);
+                        if (pause)
+                            continue;
                         try {
                             sleep(10);
                             postInvalidate();

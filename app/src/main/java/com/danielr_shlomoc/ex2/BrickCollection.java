@@ -88,7 +88,7 @@ public class BrickCollection {
             for (int j = 0; j < cols; j++) {
                 Brick brick = this.bricks[i][j];
                 if (brick.getActive())
-                    brick.drew(canvas);
+                    brick.draw(canvas);
             }
         }
     }

@@ -27,7 +27,7 @@ public class BatteryReceiver extends BroadcastReceiver {
                 int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
                 isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING;
 
-                this.mainActivity.notify(null);
+                this.mainActivity.notification();
                 break;
         }
     }

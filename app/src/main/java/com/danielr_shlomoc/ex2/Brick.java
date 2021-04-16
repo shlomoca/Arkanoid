@@ -4,6 +4,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
+import java.util.Random;
+
 public class Brick {
 
     private final float LEFT, TOP, RIGHT, BOTTOM;
@@ -22,7 +24,7 @@ public class Brick {
 
         // brick pen
         brickPaint = new Paint();
-        brickPaint.setColor(Color.WHITE);
+        brickPaint.setColor(Color.YELLOW);
         brickPaint.setStyle(Paint.Style.FILL);
         brickPaint.setStrokeWidth(5);
     }
@@ -78,7 +80,7 @@ public class Brick {
         this.active = active;
     }
 
-    public void drew(Canvas canvas) {
+    public void draw(Canvas canvas) {
         canvas.drawRect(LEFT, TOP, RIGHT, BOTTOM, brickPaint);
     }
 
