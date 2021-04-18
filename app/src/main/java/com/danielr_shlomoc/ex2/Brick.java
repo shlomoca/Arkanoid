@@ -4,8 +4,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
-import java.util.Random;
-
 public class Brick {
 
     private final float LEFT, TOP, RIGHT, BOTTOM;
@@ -45,10 +43,10 @@ public class Brick {
         return TOP;
     }
 
+    /* tests if the ball collided with the brick.
+    returns a int array with 2 slots that reference the location on the scale.
+    [y between 1-(-1), x between 1-(-1)] */
     public int[] collided(Ball ball) {
-        /* tests if the ball collided with the brick.
-            returns a int array with 2 slots that reference the location on the scale.
-             [y between 1-(-1), x between 1-(-1)] */
 
         float ballX = ball.getX();
         float ballY = ball.getY();

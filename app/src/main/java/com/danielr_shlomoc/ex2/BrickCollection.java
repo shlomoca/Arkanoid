@@ -39,8 +39,8 @@ public class BrickCollection {
         maximum = top;
     }
 
+    //test if the ball is in the rectangle and if so test to see if it hit an active block
     public int collides(Ball ball, Context context, MediaPlayer mp) {
-        //test if the ball is in the rectangle and if so test to see if it hit an active block
         int i = 0, j = 0, score = 0;
         boolean inBlocksArea = ball.test_hit_rectangle(w, 0, minimum, maximum, false);
         if (inBlocksArea) {
@@ -58,7 +58,6 @@ public class BrickCollection {
                             alive_bricks--;
                             if (alive_bricks == 0)
                                 gameOver = true;
-                            break;
                         }
                     }
 
@@ -70,7 +69,8 @@ public class BrickCollection {
 
     }
 
-    private void playSound(Context context){
+    //play hit sound
+    private void playSound(Context context) {
         MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.break_sound);
         mediaPlayer.start();
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
@@ -78,7 +78,8 @@ public class BrickCollection {
                 mp.reset();
                 mp.release();
 
-            };
+            }
+
         });
     }
 

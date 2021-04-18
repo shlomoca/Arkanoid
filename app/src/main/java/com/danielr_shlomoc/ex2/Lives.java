@@ -1,9 +1,7 @@
 package com.danielr_shlomoc.ex2;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.text.TextPaint;
 
 public class Lives {
     private final Paint ALIVE, DEAD;
@@ -25,7 +23,7 @@ public class Lives {
 
     }
 
-    private void set_painters(int ballColor){
+    private void set_painters(int ballColor) {
 
         ALIVE.setColor(ballColor);
         ALIVE.setStrokeWidth(10);
@@ -42,16 +40,16 @@ public class Lives {
         int end_of_draw_location = canvas.getWidth();
         for (int i = 1; i <= NUM_OF_LIVES; i++) {
             Paint p = i <= NUM_OF_LIVES - game_lives ? DEAD : ALIVE;
-            end_of_draw_location -= (LIVES_MARGIN*2 + LIVES_RADIUS);
+            end_of_draw_location -= (LIVES_MARGIN * 2 + LIVES_RADIUS);
             canvas.drawCircle(end_of_draw_location, LIVES_HEIGHT + LIVES_RADIUS, LIVES_RADIUS, p);
         }
         String text = "Lives:";
         int width = (int) TEXT_PAINT.measureText(text);
-        canvas.drawText(text,end_of_draw_location-width-LIVES_MARGIN*2,LIVES_HEIGHT+50,TEXT_PAINT);
+        canvas.drawText(text, end_of_draw_location - width - LIVES_MARGIN * 2, LIVES_HEIGHT + 50, TEXT_PAINT);
 
     }
 
-
+    //kill a life and return true if all lives are done
     public Boolean died() {
         game_lives--;
         return game_lives == 0;
